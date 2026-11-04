@@ -1,0 +1,95 @@
+# Copy Required Data from Sheet1 and Paste to Sheet2
+
+A Microsoft Power Automate cloud flow that retrieves Excel order records for a supplied **Customer ID** from a source table and appends the matching records to a destination table in the same Excel workbook.
+
+## What the flow does
+
+1. Starts when a user manually runs the flow.
+2. Prompts for a **Customer ID** (required text input).
+3. Uses Excel Online (Business) to list rows from the source table, filtering with the entered Customer ID.
+4. Iterates over the matching rows.
+5. Adds each matching row to the destination table, mapping the four order fields listed below.
+
+## Workbook and table requirements
+
+The exported flow definition references an Excel workbook named **`OrderDetails.xlsx`** and two Excel tables in that workbook:
+
+- **Source table (Sheet1):** table ID `{8E589DF8-CBC2-465A-88E3-DDFAD1983E8A}`
+- **Destination table (Sheet2):** table ID `{7E87E8D1-7AAC-4628-AE45-873461F99FC6}`
+
+The workbook must be stored in a location accessible through the configured Excel Online (Business) connection. The flow export identifies the workbook in the exporting account's OneDrive (`source: me`); after importing into another environment, select or configure the correct workbook and tables.
+
+Both tables are expected to contain these columns:
+
+| Source column | Destination column | Mapping |
+|---|---|---|
+| `OrderNo` | `OrderNo` | Copied as-is |
+| `OrderName` | `OrderName` | Copied as-is |
+| `CustomerID` | `CustomerID` | Copied as-is |
+| `OrderAmount` | `OrderAmount` | Copied as-is |
+
+The source query uses the OData filter `CustomerID eq '<entered Customer ID>'`.
+
+## Prerequisites
+
+- A Microsoft 365 account with access to Power Automate.
+- An **Excel Online (Business)** connection authorized to access `OrderDetails.xlsx`.
+- `OrderDetails.xlsx` stored in OneDrive for Business or another supported location accessible to the connection.
+- Two properly defined Excel tables with the expected columns; worksheet names alone are not sufficient.
+
+## Import and configure
+
+1. In Power Automate, import the flow package from this ZIP file.
+2. During import, create or select the **Excel Online (Business)** connection.
+3. Open the imported flow and verify the workbook selected in **List rows present in a table**.
+4. Confirm that this action points to the source table on Sheet1.
+5. Confirm that **Add a row into a table** points to the destination table on Sheet2.
+6. If the workbook or tables differ from the original export, reselect them and verify the four column mappings.
+7. Save the flow and run a test with a Customer ID known to exist in the source table.
+
+> The package contains environment-specific workbook, drive, table, and connection identifiers. These identifiers may not resolve in another Microsoft 365 environment; reconfigure the Excel actions during import as needed.
+
+## How to run
+
+1. Open the flow in Power Automate.
+2. Select **Run**.
+3. Enter the Customer ID when prompted.
+4. Submit the run and check its run history.
+5. Verify that the matching source records have been appended to the destination table.
+
+If no source rows match the supplied Customer ID, the loop has no rows to process and no records are added.
+
+## Important behavior and limitations
+
+- **Appends; does not replace:** the flow adds rows to the destination table. It does not clear existing destination data.
+- **No duplicate protection:** running the flow repeatedly for the same Customer ID can append the same orders again. The definition contains no duplicate check or upsert logic.
+- **No explicit empty-result message:** the exported definition does not include a separate notification when no records match.
+- **No custom error handling:** the definition relies on the standard action/run failure behavior; it does not include dedicated retry, logging, or exception-handling branches.
+- **Field scope:** only `OrderNo`, `OrderName`, `CustomerID`, and `OrderAmount` are mapped to the destination table.
+- **Customer ID is text input:** enter it in the same format used in the Excel `CustomerID` column.
+
+## Flow structure
+
+```text
+Manual trigger (Customer ID)
+        |
+        v
+List rows present in a table
+(Filter: CustomerID equals entered value)
+        |
+        v
+Apply to each matching row
+        |
+        v
+Add a row into destination table
+(Copy OrderNo, OrderName, CustomerID, OrderAmount)
+```
+
+## Package contents
+
+- `Microsoft.Flow/flows/.../definition.json` — the flow trigger, Excel actions, filter, loop, and field mappings.
+- `Microsoft.Flow/flows/.../apisMap.json` — connector mapping for Excel Online (Business).
+- `Microsoft.Flow/flows/.../connectionsMap.json` — exported connection reference mapping.
+- `Microsoft.Flow/flows/manifest.json` and `manifest.json` — package manifests.
+
+This README documents the behavior represented in the exported flow definition. It does not verify the live workbook contents, permissions, or a successful run in the target environment.
