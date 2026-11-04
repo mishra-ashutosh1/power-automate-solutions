@@ -1,0 +1,31 @@
+# Power Automate Solutions
+
+A collection of practical workflow automation projects developed using Microsoft Power Automate.
+
+## Projects
+
+### 01. Copy Data Between Excel Sheets
+Automates the retrieval of customer-specific records from an Excel source table and copies matching data into a destination table.
+
+**Key concepts:** Excel Online, filtering, loops, data transfer.
+
+### 02. Filter Query in SharePoint
+Demonstrates filtering SharePoint records using Power Automate and query-based data retrieval.
+
+**Key concepts:** SharePoint, Filter Query, data retrieval, workflow automation.
+
+## Repository Structure
+
+Each project includes:
+- README documentation
+- Exported Power Automate solution ZIP
+
+## Purpose
+
+These projects are part of my practical learning journey in workflow automation, process improvement and Microsoft Power Platform.
+
+## Author
+
+Ashutosh Mishra
+
+https://ashutosh-m.vercel.app/
